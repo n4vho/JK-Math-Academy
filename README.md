@@ -1,133 +1,151 @@
 # Tutoring-MVP
+Tutoring MVP — Scope & Requirements
 
-Core users & roles
+Roles: Owner/Admin, Staff/Tutor, Guardian (read-only to their child).
+Non-functional: i18n (EN/BN), Asia/Dhaka timezone, BDT formats, Zod validation, rate limits, CSRF, Argon2 hashes, daily backups, Sentry, deploy near BD (Vercel bom1/sin1, Supabase ap-south-1/ap-southeast-1).
 
-Owner/Admin, Staff/Tutor, Guardian (read-only to their child’s info).
+✅ Core Users & RBAC
 
-RBAC on every page + audit log of sensitive actions.
+ Role-based access on every page (Admin / Staff / Guardian).
+
+ Audit log for sensitive actions (who/what/when/before-after).
 
 1) Admissions & Student/Guardian Management
 
-Offline/online admission form (EN + BN), auto Registration No. (custom prefix ok).
+ Offline/online admission form (EN + BN).
 
-Fields: student (name, DOB, gender, photo, address, institute, batch choice), guardian(s) (name, relation, phone, email), notes, intake date.
+ Auto Registration No. (custom prefix).
 
-CRUD for students & guardians; many-to-many (student ↔ guardian).
+ Student fields: name, DOB, gender, photo, address, institute, batch choice, notes, intake date.
 
-Upload/manage student photo; soft-delete + restore.
+ Guardian(s): name, relation, phone, email (many-to-many student ↔ guardian).
+
+ CRUD for students & guardians.
+
+ Upload/manage student photo.
+
+ Soft-delete + restore.
 
 2) Batches / Classes / Routine
 
-Create Batch (name, subject, session, capacity, start/end).
+ Create Batch (name, subject, session, capacity, start/end).
 
-Assign Tutor to batch; optional weekly routine (day, start, end, room).
+ Assign Tutor to batch.
 
-Enroll/unenroll students; keep enrollment history.
+ Optional weekly routine (day, start, end, room).
+
+ Enroll/unenroll students; keep enrollment history.
 
 3) Attendance
 
-Daily attendance per batch (present/absent/late; reason).
+ Daily attendance per batch (present / absent / late; reason).
 
-Bulk mark + quick filters.
+ Bulk mark + quick filters.
 
-Reports: weekly & monthly attendance by batch and by student; export CSV/PDF.
+ Reports: weekly & monthly by batch and by student.
+
+ Export CSV/PDF.
 
 4) Assessments, Results & Progress
 
-Create Assessment (title, date, max score, batch).
+ Create Assessment (title, date, max score, batch).
 
-Enter/edit scores; optional notes.
+ Enter/edit scores; optional notes.
 
-Reports:
+ Result sheet per assessment (rank/percent).
 
-Result sheet per assessment (with rank/percent).
+ Student progress report across assessments (sparkline/summary).
 
-Student progress report across assessments (sparkline/summary).
+ Final result report per batch/term (CSV/PDF).
 
-Final result report per batch/term; export CSV/PDF.
-
-“Release” toggle (what guardians can see).
+ “Release” toggle controls guardian visibility.
 
 5) Fees, Invoices & Collections (manual only)
 
-Define fee items (tuition, exam fee, admission fee, discounts).
+ Define fee items (tuition, exam, admission, discounts).
 
-Create invoices per student/guardian in BDT (due date, items, total).
+ Create invoices per student/guardian in BDT (due date, items, total).
 
-Record manual payments (cash/bKash ref typed in; no gateway), partials supported.
+ Record manual payments (cash / typed bKash ref); support partials.
 
-Generate Receipt (printable/email).
+ Generate printable/email Receipt.
 
-Reports:
+ Reports: fee collection (date range, batch filter).
 
-Fee collection report (date range, batch filter).
-
-Outstanding dues by guardian/student.
+ Outstanding dues by guardian/student.
 
 6) Promotions / Transfers
 
-End of term: Promote students from Batch A → Batch B (keep history).
+ End-of-term Promote Batch A → Batch B (keep history).
 
-Mid-term Transfer between batches; carry fees/attendance history.
+ Mid-term Transfer between batches (carry fees/attendance history).
 
-Audit record of every promotion/transfer.
+ Audit record of every promotion/transfer.
 
 7) Staff/Teacher Management (basic)
 
-Add staff/tutors; roles & permissions.
+ Add staff/tutors; roles & permissions.
 
-Assign responsibilities/routines/classes.
+ Assign responsibilities / routines / classes.
 
-(Defer payroll/HR/auto attendance.)
+ (Payroll/HR/auto attendance deferred.)
 
 8) Lead / Inquiry Management (no messaging)
 
-Public Inquiry form (offline/online).
+ Public Inquiry form (offline/online).
 
-List of inquiries/leads; status (new, contacted, enrolled, dropped).
+ Lead list with status: new / contacted / enrolled / dropped.
 
-Notes & attachments. (Defer call/SMS history.)
+ Notes & attachments. (Call/SMS history deferred.)
 
 9) Question Bank / Materials (phaseable)
 
-Phase 1: upload/share PDFs by batch (materials manager).
+ Phase 1: upload/share PDFs by batch (materials manager).
 
-Phase 2 (later): OMR, question bank, one-click paper generation.
+ Phase 2 (later): OMR, question bank, one-click paper generation.
 
 10) Reports (menu)
 
-Students: weekly/monthly, attendance, fee collection, progress, results.
+ Students: weekly/monthly, attendance, fee collection, progress, results.
 
-Finance (manual fees): daily/monthly income reports by category; export.
+ Finance (manual fees): daily/monthly income by category (export).
 
-Admin: audit log export.
+ Admin: audit log export.
 
 11) Guardians’ Portal (read-only MVP)
 
-View student profile, attendance summary, assessments & released results, invoices & receipts (manual status).
+ View student profile.
 
-12) Non-functional & Ops
+ Attendance summary.
 
-i18n EN/BN; Unicode fonts for Bangla.
+ Released assessments/results.
 
-Timezone: Asia/Dhaka (BST), date/number formats in BDT.
+ Invoices & receipts (manual status).
 
-Validation (Zod), rate limits, CSRF, strong password policy; Argon2 hashes.
+12) Non-Functional & Ops
 
-Backups (daily), error tracking (Sentry), minimal analytics.
+ i18n EN/BN; Unicode fonts for Bangla.
 
-Deploy close to BD (e.g., Vercel bom1/sin1 + Supabase ap-south-1/ap-southeast-1).
+ Timezone: Asia/Dhaka (BST); BDT currency/number formats.
 
-13) Acceptance checks (quick)
+ Validation (Zod), rate limits, CSRF, strong password policy; Argon2 hashes.
 
-Create student via admission → appears in batch list with reg no.
+ Backups (daily) + documented restore.
 
-Mark attendance for a day → weekly/monthly report matches entries.
+ Error tracking (Sentry); minimal privacy-respecting analytics.
 
-Create assessment → enter scores → result sheet exports CSV/PDF.
+ Deploy close to BD (Vercel bom1/sin1 + Supabase ap-south-1/ap-southeast-1).
 
-Create invoice → record partial cash → dues reflect correctly → print receipt.
+✅ Acceptance Checks (MVP)
 
-Promote a batch → history shows old & new batch; attendance preserved.
+ Create student via admission → appears in batch list with reg no.
 
-Guardian login → sees only their child’s released results & invoices.
+ Mark attendance for a day → weekly/monthly report matches entries.
+
+ Create assessment → enter scores → result sheet exports CSV/PDF.
+
+ Create invoice → record partial cash → dues update → print receipt.
+
+ Promote a batch → history shows old & new; attendance preserved.
+
+ Guardian login → sees only their child’s released results & invoices.

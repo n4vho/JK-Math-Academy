@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+}
+
+enum StudentStatus {
+  ACTIVE
+  PAUSED
+  GRADUATED
+  DROPPED
+}
+
+enum EnrollmentRequestStatus {
+  NEW
+  CONTACTED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  role      Role     @default(ADMIN)
+  phone     String?  @unique
+  username  String?  @unique
+  pinHash   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@index([username])
+}
+
+model Batch {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  students    Student[]
+  assessments Assessment[]
+}
+
+model Student {
+  id             String        @id @default(cuid())
+  registrationNo String        @unique
+  fullName       String
+  phone          String?
+  school         String?
+  grade          String?
+  status         StudentStatus @default(ACTIVE)
+  photoUrl       String?
+  batchId        String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  batch           Batch?            @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  assessmentScores AssessmentScore[]
+  enrollmentRequest EnrollmentRequest?
+
+  @@index([registrationNo])
+  @@index([status])
+  @@index([batchId])
+}
+
+model Assessment {
+  id        String   @id @default(cuid())
+  batchId   String
+  title     String
+  subject   String
+  date      DateTime
+  maxMarks  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batch         Batch            @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  assessmentScores AssessmentScore[]
+
+  @@index([batchId])
+}
+
+model AssessmentScore {
+  id           String    @id @default(cuid())
+  assessmentId String
+  studentId    String
+  score        Int?
+  remarks      String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, studentId])
+  @@index([assessmentId])
+  @@index([studentId])
+}
+
+model EnrollmentRequest {
+  id               String                  @id @default(cuid())
+  studentName      String
+  phone            String
+  grade            String?
+  school           String?
+  subjects         String?
+  message          String?
+  status           EnrollmentRequestStatus @default(NEW)
+  convertedStudentId String?               @unique
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  convertedStudent Student?                @relation(fields: [convertedStudentId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([convertedStudentId])
+}

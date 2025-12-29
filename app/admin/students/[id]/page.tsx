@@ -1,0 +1,96 @@
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/db";
+import Link from "next/link";
+import { StudentActions } from "./student-actions";
+import { SuccessMessage } from "./success-message";
+import { StudentDetailTabs } from "./page-with-tabs";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function StudentDetailPage({ params }: Props) {
+  const { id } = await params;
+
+  const student = await prisma.student.findUnique({
+    where: { id },
+    include: {
+      batch: true,
+      assessmentScores: {
+        include: {
+          assessment: {
+            select: {
+              id: true,
+              title: true,
+              subject: true,
+              date: true,
+              maxMarks: true,
+            },
+          },
+        },
+        orderBy: {
+          assessment: {
+            date: "desc",
+          },
+        },
+      },
+    },
+  });
+
+  if (!student) {
+    notFound();
+  }
+
+  // Transform scores for the component
+  const scores = student.assessmentScores.map((score) => ({
+    id: score.id,
+    score: score.score,
+    remarks: score.remarks,
+    assessment: {
+      id: score.assessment.id,
+      title: score.assessment.title,
+      subject: score.assessment.subject,
+      date: score.assessment.date.toISOString(),
+      maxMarks: score.assessment.maxMarks,
+    },
+  }));
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <Link
+            href="/admin/students"
+            className="text-sm text-muted-foreground hover:text-foreground mb-2 inline-block"
+          >
+            ← Back to Students
+          </Link>
+          <h1 className="text-3xl font-bold">{student.fullName}</h1>
+        </div>
+        <StudentActions studentId={id} currentStatus={student.status} />
+      </div>
+      <Suspense fallback={null}>
+        <SuccessMessage />
+      </Suspense>
+
+      <StudentDetailTabs
+        student={{
+          id: student.id,
+          registrationNo: student.registrationNo,
+          fullName: student.fullName,
+          phone: student.phone,
+          school: student.school,
+          grade: student.grade,
+          status: student.status,
+          photoUrl: student.photoUrl,
+          createdAt: student.createdAt,
+          updatedAt: student.updatedAt,
+          batch: student.batch,
+        }}
+        scores={scores}
+      />
+    </div>
+  );
+}
+

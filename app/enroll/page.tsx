@@ -22,6 +22,16 @@ export default function EnrollPage() {
   const [referenceId, setReferenceId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

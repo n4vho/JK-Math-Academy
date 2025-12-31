@@ -339,7 +339,7 @@ export default function EditStudentPage() {
           </form>
         </CardContent>
       </Card>
-        </div>
+      </div>
       </div>
     </div>
   );

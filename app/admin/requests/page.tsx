@@ -31,7 +31,7 @@ export default async function AdminRequestsPage({ searchParams }: Props) {
   }
 
   // Fetch requests with filters and pagination
-  const [requests, totalCount] = await Promise.all([
+  const [requests, totalCount, batches] = await Promise.all([
     prisma.enrollmentRequest.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -48,6 +48,13 @@ export default async function AdminRequestsPage({ searchParams }: Props) {
       },
     }),
     prisma.enrollmentRequest.count({ where }),
+    prisma.batch.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+      },
+    }),
   ]);
 
   // Serialize dates for client component
@@ -78,8 +85,11 @@ export default async function AdminRequestsPage({ searchParams }: Props) {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Enrollment Requests</h1>
         <div className="flex gap-2">
+          <Link href="/admin/dashboard">
+            <Button variant="outline">Dashboard</Button>
+          </Link>
           <Link href="/admin/students">
-            <Button variant="outline">Back to Students</Button>
+            <Button variant="outline">Students</Button>
           </Link>
           <Link href="/logout">
             <Button variant="outline">Logout</Button>
@@ -92,6 +102,7 @@ export default async function AdminRequestsPage({ searchParams }: Props) {
         currentPage={page}
         totalPages={totalPages}
         totalCount={totalCount}
+        batches={batches}
       />
     </div>
   );

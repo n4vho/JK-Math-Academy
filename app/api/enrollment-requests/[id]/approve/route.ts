@@ -46,6 +46,16 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    
+    // Parse request body (optional batchId)
+    let batchId: string | undefined;
+    try {
+      const body = await request.json();
+      batchId = body.batchId || undefined;
+    } catch {
+      // No body provided, batchId remains undefined
+      batchId = undefined;
+    }
 
     // Find the enrollment request
     const enrollmentRequest = await prisma.enrollmentRequest.findUnique({
@@ -72,6 +82,19 @@ export async function POST(
         { error: "Request is already rejected" },
         { status: 400 }
       );
+    }
+
+    // Validate batchId if provided
+    if (batchId) {
+      const batch = await prisma.batch.findUnique({
+        where: { id: batchId },
+      });
+      if (!batch) {
+        return NextResponse.json(
+          { error: "Invalid batch ID" },
+          { status: 400 }
+        );
+      }
     }
 
     // Generate registration number with retry logic for uniqueness
@@ -120,6 +143,7 @@ export async function POST(
           school: enrollmentRequest.school?.trim() || null,
           grade: enrollmentRequest.grade?.trim() || null,
           status: "ACTIVE",
+          batchId: batchId || null,
         },
       });
 

@@ -27,8 +27,11 @@ export default async function AdminBatchesPage() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Batches</h1>
         <div className="flex gap-2">
+          <Link href="/admin/dashboard">
+            <Button variant="outline">Dashboard</Button>
+          </Link>
           <Link href="/admin/batches/new">
-            <Button>Add Batch</Button>
+            <Button>Create Batch</Button>
           </Link>
           <Link href="/admin/students">
             <Button variant="outline">Students</Button>

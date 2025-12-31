@@ -31,7 +31,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        router.push("/admin/students");
+        router.push("/admin/dashboard");
         router.refresh();
       } else {
         setError(data.error || "Invalid credentials");

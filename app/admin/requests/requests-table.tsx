@@ -23,11 +23,17 @@ type EnrollmentRequest = {
   } | null;
 };
 
+type Batch = {
+  id: string;
+  name: string;
+};
+
 type RequestsTableProps = {
   requests: EnrollmentRequest[];
   currentPage: number;
   totalPages: number;
   totalCount: number;
+  batches: Batch[];
 };
 
 export function RequestsTable({
@@ -35,9 +41,12 @@ export function RequestsTable({
   currentPage,
   totalPages,
   totalCount,
+  batches,
 }: RequestsTableProps) {
   const router = useRouter();
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [approveModalOpen, setApproveModalOpen] = useState<string | null>(null);
+  const [selectedBatchId, setSelectedBatchId] = useState<string>("");
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(window.location.search);
@@ -50,16 +59,29 @@ export function RequestsTable({
     router.push(`/admin/requests${queryString ? `?${queryString}` : ""}`);
   };
 
-  const handleApprove = async (requestId: string) => {
-    if (processingId) return;
-    setProcessingId(requestId);
+  const handleApproveClick = (requestId: string) => {
+    setApproveModalOpen(requestId);
+    setSelectedBatchId("");
+  };
+
+  const handleApproveConfirm = async () => {
+    if (!approveModalOpen || processingId) return;
+    setProcessingId(approveModalOpen);
 
     try {
-      const response = await fetch(`/api/enrollment-requests/${requestId}/approve`, {
+      const response = await fetch(`/api/enrollment-requests/${approveModalOpen}/approve`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          batchId: selectedBatchId || null,
+        }),
       });
 
       if (response.ok) {
+        setApproveModalOpen(null);
+        setSelectedBatchId("");
         router.refresh();
       } else {
         const data = await response.json();
@@ -193,8 +215,8 @@ export function RequestsTable({
                               <>
                                 <Button
                                   size="sm"
-                                  onClick={() => handleApprove(request.id)}
-                                  disabled={processingId === request.id}
+                                  onClick={() => handleApproveClick(request.id)}
+                                  disabled={processingId === request.id || approveModalOpen !== null}
                                 >
                                   {processingId === request.id ? "Processing..." : "Approve"}
                                 </Button>
@@ -202,7 +224,7 @@ export function RequestsTable({
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleReject(request.id)}
-                                  disabled={processingId === request.id}
+                                  disabled={processingId === request.id || approveModalOpen !== null}
                                 >
                                   Reject
                                 </Button>
@@ -260,6 +282,54 @@ export function RequestsTable({
           )}
         </CardContent>
       </Card>
+
+      {/* Approve Modal */}
+      {approveModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-background rounded-lg border shadow-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-semibold mb-4">Approve Enrollment Request</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Select a batch to assign this student to (optional):
+            </p>
+            <div className="mb-4">
+              <label htmlFor="batch-select" className="block text-sm font-medium mb-2">
+                Batch
+              </label>
+              <select
+                id="batch-select"
+                value={selectedBatchId}
+                onChange={(e) => setSelectedBatchId(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">No Batch (Assign Later)</option>
+                {batches.map((batch) => (
+                  <option key={batch.id} value={batch.id}>
+                    {batch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setApproveModalOpen(null);
+                  setSelectedBatchId("");
+                }}
+                disabled={processingId === approveModalOpen}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleApproveConfirm}
+                disabled={processingId === approveModalOpen}
+              >
+                {processingId === approveModalOpen ? "Processing..." : "Approve"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

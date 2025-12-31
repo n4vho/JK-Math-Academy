@@ -6,6 +6,16 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // SECURITY: Check admin authentication
+    // This endpoint is used by admin pages but is not under /api/admin/
+    const adminSession = request.cookies.get("admin_session");
+    if (!adminSession || adminSession.value !== "1") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
 
     const student = await prisma.student.findUnique({
@@ -37,6 +47,16 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // SECURITY: Check admin authentication
+    // This endpoint is used by admin pages but is not under /api/admin/
+    const adminSession = request.cookies.get("admin_session");
+    if (!adminSession || adminSession.value !== "1") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { fullName, phone, school, grade, status, photoUrl, batchId } = body;

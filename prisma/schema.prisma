@@ -111,6 +111,7 @@ model AssessmentScore {
 
 model EnrollmentRequest {
   id               String                  @id @default(cuid())
+  referenceId      String                  @unique
   studentName      String
   phone            String
   grade            String?
@@ -127,4 +128,5 @@ model EnrollmentRequest {
   @@index([status])
   @@index([createdAt])
   @@index([convertedStudentId])
+  @@index([referenceId])
 }

@@ -85,6 +85,9 @@ export default async function AdminStudentsPage({ searchParams }: Props) {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Students</h1>
         <div className="flex gap-2">
+          <Link href="/admin/dashboard">
+            <Button variant="outline">Dashboard</Button>
+          </Link>
           <Link href="/admin/students/new">
             <Button>Add Student</Button>
           </Link>

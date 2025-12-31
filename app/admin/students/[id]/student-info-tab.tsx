@@ -32,6 +32,17 @@ export function StudentInfoTab({ student }: Props) {
             <CardTitle>Student Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {student.photoUrl && (
+              <div className="flex justify-center pb-4 border-b">
+                <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-border bg-muted">
+                  <img
+                    src={student.photoUrl}
+                    alt={`${student.fullName}'s photo`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            )}
             <div>
               <label className="text-sm font-medium text-muted-foreground">
                 Registration Number
@@ -88,25 +99,6 @@ export function StudentInfoTab({ student }: Props) {
                 <p className="text-base">{student.batch.name}</p>
               </div>
             )}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Photo URL
-              </label>
-              {student.photoUrl ? (
-                <div className="mt-2">
-                  <a
-                    href={student.photoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >
-                    {student.photoUrl}
-                  </a>
-                </div>
-              ) : (
-                <p className="text-base">-</p>
-              )}
-            </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">
                 Created At

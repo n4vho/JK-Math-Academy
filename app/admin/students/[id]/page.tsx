@@ -5,6 +5,7 @@ import Link from "next/link";
 import { StudentActions } from "./student-actions";
 import { SuccessMessage } from "./success-message";
 import { StudentDetailTabs } from "./page-with-tabs";
+import { PhotoUpload } from "./photo-upload";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -74,22 +75,29 @@ export default async function StudentDetailPage({ params }: Props) {
         <SuccessMessage />
       </Suspense>
 
-      <StudentDetailTabs
-        student={{
-          id: student.id,
-          registrationNo: student.registrationNo,
-          fullName: student.fullName,
-          phone: student.phone,
-          school: student.school,
-          grade: student.grade,
-          status: student.status,
-          photoUrl: student.photoUrl,
-          createdAt: student.createdAt,
-          updatedAt: student.updatedAt,
-          batch: student.batch,
-        }}
-        scores={scores}
-      />
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-1">
+          <PhotoUpload studentId={id} currentPhotoUrl={student.photoUrl} />
+        </div>
+        <div className="md:col-span-2">
+          <StudentDetailTabs
+            student={{
+              id: student.id,
+              registrationNo: student.registrationNo,
+              fullName: student.fullName,
+              phone: student.phone,
+              school: student.school,
+              grade: student.grade,
+              status: student.status,
+              photoUrl: student.photoUrl,
+              createdAt: student.createdAt,
+              updatedAt: student.updatedAt,
+              batch: student.batch,
+            }}
+            scores={scores}
+          />
+        </div>
+      </div>
     </div>
   );
 }

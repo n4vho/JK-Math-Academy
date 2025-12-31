@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export default function EnrollPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     studentName: "",
     phone: "",
@@ -19,6 +18,9 @@ export default function EnrollPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const [referenceId, setReferenceId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +60,8 @@ export default function EnrollPage() {
 
       if (response.ok) {
         setSuccess(true);
+        setRequestId(data.enrollmentRequest?.id || null);
+        setReferenceId(data.enrollmentRequest?.referenceId || null);
         // Reset form
         setFormData({
           studentName: "",
@@ -67,10 +71,6 @@ export default function EnrollPage() {
           subjects: "",
           message: "",
         });
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          setSuccess(false);
-        }, 5000);
       } else {
         setError(data.error || "An error occurred. Please try again.");
       }
@@ -81,6 +81,7 @@ export default function EnrollPage() {
     }
   };
 
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <Card className="w-full max-w-2xl">
@@ -89,16 +90,152 @@ export default function EnrollPage() {
           <p className="text-sm text-muted-foreground mt-2">
             Please fill out the form below to request enrollment. We will contact you shortly.
           </p>
+          <div className="mt-3">
+            <Link
+              href="/enroll/status"
+              className="text-sm text-primary hover:underline font-medium"
+            >
+              Already submitted? Check your enrollment status →
+            </Link>
+          </div>
         </CardHeader>
         <CardContent>
-          {success && (
-            <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                Thank you! Your enrollment request has been submitted successfully. We will contact you soon.
-              </p>
+          {success && (requestId || referenceId) ? (
+            <div className="mb-4 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-green-600 dark:text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-base font-semibold text-green-800 dark:text-green-200">
+                    Enrollment Request Submitted Successfully!
+                  </p>
+                </div>
+                <div className="mt-4 p-4 bg-white dark:bg-zinc-900 rounded border border-green-200 dark:border-green-800">
+                  <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                    Your Request ID:
+                  </p>
+                  <div className="flex items-center gap-2 mb-4">
+                    <p className="text-2xl font-mono font-bold text-green-700 dark:text-green-400 flex-1">
+                      {referenceId || requestId}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyToClipboard(referenceId || requestId || "")}
+                      className="flex-shrink-0 px-3 py-1.5 text-sm font-medium text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-md transition-colors flex items-center gap-1.5"
+                      title="Copy to clipboard"
+                    >
+                      {copied ? (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            />
+                          </svg>
+                          Copy
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      Please save this Request ID. You can use it to check your enrollment status at{" "}
+                      <a
+                        href="/enroll/status"
+                        className="text-green-600 dark:text-green-400 hover:underline font-medium"
+                      >
+                        /enroll/status
+                      </a>
+                      .
+                    </p>
+                    <div className="flex items-start gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                      <svg
+                        className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                        <strong>Tip:</strong> Take a screenshot of this page or copy the Request ID to save it safely.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Link href="/enroll/status" className="flex-1">
+                    <Button
+                      variant="outline"
+                      className="w-full text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    >
+                      Check Status
+                    </Button>
+                  </Link>
+                  <Link href="/" className="flex-1">
+                    <Button
+                      variant="outline"
+                      className="w-full text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    >
+                      Go to Home
+                    </Button>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSuccess(false);
+                      setRequestId(null);
+                      setReferenceId(null);
+                    }}
+                    className="flex-1 px-4 py-2 text-sm font-medium text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 rounded-md transition-colors"
+                  >
+                    Submit Another Request
+                  </button>
+                </div>
+              </div>
             </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
                 htmlFor="studentName"
@@ -207,6 +344,7 @@ export default function EnrollPage() {
               {isLoading ? "Submitting..." : "Submit Enrollment Request"}
             </Button>
           </form>
+          )}
         </CardContent>
       </Card>
     </div>

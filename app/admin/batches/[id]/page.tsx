@@ -47,9 +47,6 @@ export default async function BatchDetailPage({ params }: Props) {
           <Link href={`/admin/batches/${id}/assessments/new`}>
             <Button variant="outline">Create Assessment</Button>
           </Link>
-          <Link href={`/admin/batches/${id}/attendance`}>
-            <Button variant="outline">Take Attendance</Button>
-          </Link>
         </div>
       </div>
       <Suspense fallback={null}>

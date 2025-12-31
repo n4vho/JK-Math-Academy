@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import "./globals.css";
 
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tutoring Center - Excellence in Education",
-  description: "Personalized tutoring that helps students achieve their academic goals. Enroll today and start your learning journey.",
+  title: "Math Academy - Cadet College Admission Coaching",
+  description: "Specialized Math coaching for Bangladesh Cadet College admission tests. Directed by Jahangir Kabir Sir. Special Care Program with personalized attention. Call +8801914070418.",
 };
 
 export default function RootLayout({
@@ -34,9 +35,19 @@ export default function RootLayout({
             <div className="flex h-16 items-center justify-between">
               <Link
                 href="/"
-                className="text-lg font-semibold text-foreground hover:text-foreground/80"
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               >
-                Tutoring Center
+                <Image
+                  src="/math-academy-logo.jpeg"
+                  alt="Math Academy Logo"
+                  width={40}
+                  height={40}
+                  className="h-10 w-auto"
+                  priority
+                />
+                <span className="text-lg font-semibold text-foreground">
+                  Math Academy
+                </span>
               </Link>
               <div className="flex items-center gap-4">
                 <Link
@@ -62,6 +73,12 @@ export default function RootLayout({
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Check Status
+                </Link>
+                <Link
+                  href="/student/login"
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Student Login
                 </Link>
                 <Link href="/enroll">
                   <Button size="sm">Enroll</Button>

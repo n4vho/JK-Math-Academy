@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SuccessMessage } from "./success-message";
 import { AddStudentsToBatch } from "./add-students-to-batch";
 import { RosterTable } from "./roster-table";
+import { BatchActions } from "./batch-actions";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -50,6 +51,11 @@ export default async function BatchDetailPage({ params }: Props) {
           <Link href={`/admin/batches/${id}/assessments/new`}>
             <Button variant="outline">Create Assessment</Button>
           </Link>
+          <BatchActions
+            batchId={id}
+            batchName={batch.name}
+            studentCount={batch.students.length}
+          />
         </div>
       </div>
       <Suspense fallback={null}>

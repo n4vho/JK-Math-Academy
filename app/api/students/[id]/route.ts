@@ -163,3 +163,64 @@ export async function PATCH(
   }
 }
 
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // SECURITY: Check admin authentication
+    const adminSession = request.cookies.get("admin_session");
+    if (!adminSession || adminSession.value !== "1") {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+
+    // Verify student exists
+    const student = await prisma.student.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        photoUrl: true,
+      },
+    });
+
+    if (!student) {
+      return NextResponse.json(
+        { error: "Student not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete photo if exists
+    if (student.photoUrl) {
+      try {
+        const { deleteFile } = await import("@/lib/storage");
+        await deleteFile(student.photoUrl);
+      } catch (deleteError) {
+        // Log but don't fail the deletion if photo deletion fails
+        console.warn("Failed to delete student photo:", deleteError);
+      }
+    }
+
+    // Delete student (cascades will handle assessment scores)
+    await prisma.student.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { success: true, message: "Student deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Delete student error:", error);
+    return NextResponse.json(
+      { error: "An error occurred while deleting the student" },
+      { status: 500 }
+    );
+  }
+}
+

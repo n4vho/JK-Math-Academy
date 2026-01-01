@@ -20,12 +20,18 @@ type Student = {
   batchId: string | null;
 };
 
+type Batch = {
+  id: string;
+  name: string;
+};
+
 export default function EditStudentPage() {
   const router = useRouter();
   const params = useParams();
   const studentId = params.id as string;
 
   const [student, setStudent] = useState<Student | null>(null);
+  const [batches, setBatches] = useState<Batch[]>([]);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -38,6 +44,23 @@ export default function EditStudentPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Fetch batches
+  useEffect(() => {
+    const fetchBatches = async () => {
+      try {
+        const response = await fetch("/api/batches");
+        if (response.ok) {
+          const data = await response.json();
+          setBatches(data.batches || []);
+        }
+      } catch (err) {
+        console.error("Error fetching batches:", err);
+      }
+    };
+
+    fetchBatches();
+  }, []);
 
   // Fetch student data
   useEffect(() => {
@@ -308,16 +331,22 @@ export default function EditStudentPage() {
                 htmlFor="batchId"
                 className="block text-sm font-medium mb-1"
               >
-                Batch ID (optional)
+                Batch (optional)
               </label>
-              <Input
+              <select
                 id="batchId"
                 name="batchId"
-                type="text"
                 value={formData.batchId}
                 onChange={handleChange}
-                placeholder="Enter batch ID"
-              />
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">No Batch</option>
+                {batches.map((batch) => (
+                  <option key={batch.id} value={batch.id}>
+                    {batch.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {error && (

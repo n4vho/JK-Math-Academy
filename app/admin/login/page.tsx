@@ -64,7 +64,6 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="01700000000"
               />
             </div>
             <div>
@@ -78,7 +77,6 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPin(e.target.value)}
                 required
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="123456"
               />
             </div>
             {error && (

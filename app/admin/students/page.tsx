@@ -123,18 +123,25 @@ export default async function AdminStudentsPage({ searchParams }: Props) {
     </div>
   );
   } catch (error) {
-    // Log error details for debugging
+    // Log error details for debugging - this will appear in server logs
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     const errorStack = error instanceof Error ? error.stack : undefined;
+    const errorDigest = (error as any)?.digest;
     
-    console.error("Error loading students page:", {
-      message: errorMessage,
-      stack: errorStack,
-      env: {
-        hasDatabaseUrl: !!process.env.DATABASE_URL,
-        nodeEnv: process.env.NODE_ENV,
-      },
+    // Enhanced logging with all available error information
+    console.error("=".repeat(80));
+    console.error("ERROR IN ADMIN STUDENTS PAGE");
+    console.error("=".repeat(80));
+    console.error("Message:", errorMessage);
+    console.error("Digest:", errorDigest || "No digest available");
+    console.error("Stack:", errorStack || "No stack trace");
+    console.error("Environment:", {
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      nodeEnv: process.env.NODE_ENV,
+      databaseUrlLength: process.env.DATABASE_URL?.length || 0,
     });
+    console.error("Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    console.error("=".repeat(80));
 
     // Return error UI instead of crashing
     return (

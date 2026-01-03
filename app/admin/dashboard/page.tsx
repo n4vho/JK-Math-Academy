@@ -7,20 +7,26 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  try {
+    // Check for DATABASE_URL early
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
 
-  // Fetch stats in parallel
-  const [
-    totalStudents,
-    activeBatches,
-    pendingRequests,
-    recentAssessments,
-    recentEnrollmentRequests,
-    recentApprovals,
-    recentAssessmentsCreated,
-    recentScoreUpdates,
-  ] = await Promise.all([
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Fetch stats in parallel
+    const [
+      totalStudents,
+      activeBatches,
+      pendingRequests,
+      recentAssessments,
+      recentEnrollmentRequests,
+      recentApprovals,
+      recentAssessmentsCreated,
+      recentScoreUpdates,
+    ] = await Promise.all([
     // Total students
     prisma.student.count(),
 
@@ -347,4 +353,50 @@ export default async function AdminDashboardPage() {
       </div>
     </div>
   );
+  } catch (error) {
+    // Log error details for debugging
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    console.error("Error loading dashboard page:", {
+      message: errorMessage,
+      stack: errorStack,
+      env: {
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        nodeEnv: process.env.NODE_ENV,
+      },
+    });
+
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <Link href="/logout">
+            <Button variant="outline">Logout</Button>
+          </Link>
+        </div>
+        <div className="rounded-lg border border-destructive bg-destructive/10 p-6">
+          <h2 className="text-lg font-semibold text-destructive mb-2">Error Loading Dashboard</h2>
+          <p className="text-sm text-muted-foreground">
+            An error occurred while loading the dashboard. Please try refreshing the page or contact support if the problem persists.
+          </p>
+          {(process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_SHOW_ERRORS === "true") && error instanceof Error && (
+            <div className="mt-4 space-y-2">
+              <pre className="text-xs bg-background p-2 rounded overflow-auto border">
+                {errorMessage}
+              </pre>
+              {errorStack && (
+                <details className="text-xs">
+                  <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Stack trace</summary>
+                  <pre className="mt-2 bg-background p-2 rounded overflow-auto border">
+                    {errorStack}
+                  </pre>
+                </details>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 }

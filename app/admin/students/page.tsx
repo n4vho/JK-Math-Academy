@@ -20,6 +20,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminStudentsPage({ searchParams }: Props) {
   try {
+    // Check for DATABASE_URL early
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+
     const params = await searchParams;
     const searchQuery = params.q || "";
     const statusFilter = params.status || "";
@@ -118,7 +123,19 @@ export default async function AdminStudentsPage({ searchParams }: Props) {
     </div>
   );
   } catch (error) {
-    console.error("Error loading students page:", error);
+    // Log error details for debugging
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    
+    console.error("Error loading students page:", {
+      message: errorMessage,
+      stack: errorStack,
+      env: {
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        nodeEnv: process.env.NODE_ENV,
+      },
+    });
+
     // Return error UI instead of crashing
     return (
       <div className="container mx-auto px-4 py-8">
@@ -138,10 +155,20 @@ export default async function AdminStudentsPage({ searchParams }: Props) {
           <p className="text-sm text-muted-foreground">
             An error occurred while loading the students list. Please try refreshing the page or contact support if the problem persists.
           </p>
-          {process.env.NODE_ENV === "development" && error instanceof Error && (
-            <pre className="mt-4 text-xs bg-background p-2 rounded overflow-auto">
-              {error.message}
-            </pre>
+          {(process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_SHOW_ERRORS === "true") && error instanceof Error && (
+            <div className="mt-4 space-y-2">
+              <pre className="text-xs bg-background p-2 rounded overflow-auto border">
+                {errorMessage}
+              </pre>
+              {errorStack && (
+                <details className="text-xs">
+                  <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Stack trace</summary>
+                  <pre className="mt-2 bg-background p-2 rounded overflow-auto border">
+                    {errorStack}
+                  </pre>
+                </details>
+              )}
+            </div>
           )}
         </div>
       </div>

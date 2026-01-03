@@ -52,13 +52,21 @@ function getPrismaClient(): PrismaClient {
 // This prevents errors during Next.js build analysis when DATABASE_URL might not be available
 export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    const client = getPrismaClient();
-    const value = client[prop as keyof PrismaClient];
-    // Handle methods and properties
-    if (typeof value === "function") {
-      return value.bind(client);
+    try {
+      const client = getPrismaClient();
+      const value = client[prop as keyof PrismaClient];
+      // Handle methods and properties
+      if (typeof value === "function") {
+        return value.bind(client);
+      }
+      return value;
+    } catch (error) {
+      // Wrap the error to provide better context
+      if (error instanceof Error && error.message.includes("DATABASE_URL")) {
+        throw new Error("Database connection not configured. Please set DATABASE_URL environment variable.");
+      }
+      throw error;
     }
-    return value;
   },
 });
 

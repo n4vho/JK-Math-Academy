@@ -85,6 +85,9 @@ export default async function AssessmentResultsPage({ params }: Props) {
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href={`/admin/assessments/${assessmentId}/print`} target="_blank">
+            <Button variant="outline">Print Results</Button>
+          </Link>
           <Link href={`/admin/assessments/${assessmentId}/marks`}>
             <Button variant="outline">Enter Marks</Button>
           </Link>

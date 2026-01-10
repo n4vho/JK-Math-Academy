@@ -258,9 +258,14 @@ export default function MarksEntryPage() {
             {assessment.title} - {assessment.subject}
           </p>
         </div>
-        <Link href={`/admin/batches/${assessment.batch.id}`}>
-          <Button variant="outline">Back to Batch</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href={`/admin/assessments/${assessmentId}/print`} target="_blank">
+            <Button variant="outline">Print Results</Button>
+          </Link>
+          <Link href={`/admin/batches/${assessment.batch.id}`}>
+            <Button variant="outline">Back to Batch</Button>
+          </Link>
+        </div>
       </div>
 
       {successMessage && (

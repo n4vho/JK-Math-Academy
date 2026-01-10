@@ -94,12 +94,21 @@ export default function Error({
           </div>
         )}
 
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           <Button onClick={reset} variant="outline">
             Try again
           </Button>
           <Link href="/admin/dashboard">
             <Button>Go to Dashboard</Button>
+          </Link>
+          <Link href="/admin/view-error-logs">
+            <Button variant="outline">How to Find Error Logs</Button>
+          </Link>
+          <Link href="/admin/test-db">
+            <Button variant="outline">Test Database</Button>
+          </Link>
+          <Link href="/admin/check-migrations">
+            <Button variant="outline">Check Migrations</Button>
           </Link>
         </div>
       </div>

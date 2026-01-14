@@ -11,9 +11,13 @@ const galleryImages = [
   "/pics/2b8b02d2-ef7e-4051-b415-216f1fcf8d56.jpeg",
   "/pics/4bc60c44-10b8-45bd-9a7a-0c3fae1d4f3e.jpeg",
   "/pics/6791d0da-3950-43cf-9111-f656304b4b3d.jpeg",
+  "/pics/8ee6d7cd-7e34-4139-89ce-0f4e725f04a8.jpeg",
   "/pics/9b13e026-4067-46de-8683-7055db338456.jpeg",
   "/pics/b899bc4b-ed8a-4d48-b18e-c2ec31e6b92a.jpeg",
   "/pics/bd449063-99c6-45c0-a7e3-d937e096d922.jpeg",
+  "/pics/d42fcf28-7da9-4077-9cf4-44f0bb4dc27b.jpeg",
+  "/pics/dc9ff208-7b4b-46d2-98ca-d6385ca33828.jpeg",
+  "/pics/eda82134-0fc5-48d5-abe5-e98c0b36bfe6.jpeg",
 ];
 
 export default function GalleryPage() {

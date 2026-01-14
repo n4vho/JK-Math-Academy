@@ -170,6 +170,46 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Gallery Section */}
+      <section id="gallery" className="bg-muted py-20">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold">Photo Gallery</h2>
+            <p className="text-lg text-muted-foreground">
+              A glimpse into life at Math Academy
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              "/pics/02bf785f-460c-434e-b791-a130472d94fe.jpeg",
+              "/pics/2b8b02d2-ef7e-4051-b415-216f1fcf8d56.jpeg",
+              "/pics/4bc60c44-10b8-45bd-9a7a-0c3fae1d4f3e.jpeg",
+              "/pics/6791d0da-3950-43cf-9111-f656304b4b3d.jpeg",
+            ].map((imageSrc, index) => (
+              <div
+                key={imageSrc}
+                className="group relative aspect-square overflow-hidden rounded-lg border bg-card shadow-sm transition-all hover:scale-[1.02] hover:shadow-lg"
+              >
+                <Image
+                  src={imageSrc}
+                  alt={`Gallery preview ${index + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/gallery">
+              <Button size="lg" variant="outline">
+                View Full Gallery
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
       <section id="contact" className="py-20">
         <div className="container mx-auto px-4">
@@ -253,6 +293,9 @@ export default function Home() {
               <a href="#services" className="text-sm text-muted-foreground hover:text-foreground">
                 Services
               </a>
+              <Link href="/gallery" className="text-sm text-muted-foreground hover:text-foreground">
+                Gallery
+              </Link>
               <a href="#contact" className="text-sm text-muted-foreground hover:text-foreground">
                 Contact
               </a>

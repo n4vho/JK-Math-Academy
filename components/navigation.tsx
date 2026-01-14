@@ -20,6 +20,7 @@ export function Navigation() {
   const navLinks = [
     { href: "/#services", label: "Services" },
     { href: "/#how-it-works", label: "How It Works" },
+    { href: "/gallery", label: "Gallery" },
     { href: "/#contact", label: "Contact" },
     { href: "/enroll/status", label: "Check Status" },
     { href: "/student/login", label: "Student Login" },

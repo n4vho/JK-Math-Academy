@@ -3,8 +3,13 @@
 # Database Migration Script
 # This script runs Prisma migrations against your production database
 
-# Set your production DATABASE_URL here
-export DATABASE_URL="postgresql://postgres.xsskarimpydinfqlwaej:Ann@beth11235Ch4s3@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?pgbouncer=true&sslmode=require"
+# Requires DATABASE_URL to be set in your environment.
+if [ -z "$DATABASE_URL" ]; then
+  echo "❌ DATABASE_URL is not set. Export it before running this script."
+  echo "Example:"
+  echo "  export DATABASE_URL=\"postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require\""
+  exit 1
+fi
 
 echo "🔍 Checking migration status..."
 npx prisma migrate status

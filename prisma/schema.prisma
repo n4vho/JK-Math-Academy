@@ -37,6 +37,24 @@ enum PaymentCategory {
   OTHER
 }
 
+enum NoticeType {
+  ANNOUNCEMENT
+  EXAM_SCHEDULE
+  EXAM_RESULT
+  PAYMENT
+  URGENT
+  OTHER
+}
+
+enum NoticeAudienceType {
+  ALL
+  BATCH
+  CLASS
+  STUDENT
+  GUARDIAN_ONLY
+  STAFF_ONLY
+}
+
 model User {
   id        String   @id @default(cuid())
   role      Role     @default(ADMIN)
@@ -47,6 +65,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   payments  Payment[]
+  createdNotices Notice[]
+  noticeReads    NoticeRead[]
 
   @@index([phone])
   @@index([username])
@@ -167,4 +187,37 @@ model Payment {
   @@index([studentId, appliesToMonth])
   @@index([studentId, category])
   @@index([receiptNo])
+}
+
+model Notice {
+  id              String              @id @default(cuid())
+  title           String
+  body            String
+  type            NoticeType
+  audienceType    NoticeAudienceType
+  audienceRefId   String?
+  isPinned        Boolean             @default(false)
+  publishAt       DateTime            @default(now())
+  attachmentUrl   String?
+  createdAt       DateTime            @default(now())
+  createdByUserId String?
+
+  createdByUser   User?               @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  reads           NoticeRead[]
+
+  @@index([publishAt])
+  @@index([isPinned])
+}
+
+model NoticeRead {
+  id       String   @id @default(cuid())
+  noticeId String
+  userId   String
+  readAt   DateTime @default(now())
+
+  notice   Notice   @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([noticeId, userId])
+  @@index([userId])
 }

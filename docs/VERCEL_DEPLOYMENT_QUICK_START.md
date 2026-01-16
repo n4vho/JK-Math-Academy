@@ -51,7 +51,7 @@ STORAGE_PROVIDER=supabase
 
 ### 6. Run Migrations
 
-**After first deploy, run migrations locally:**
+**After first deploy, run migrations locally (not in Vercel build):**
 
 ```bash
 DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require" npx prisma migrate deploy

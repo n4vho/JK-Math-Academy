@@ -146,14 +146,15 @@ STORAGE_PROVIDER=supabase
    - `prisma generate` creates Prisma Client
    - ✅ Prisma Client is ready for your app
 
-2. **During `next build`:**
+2. **During `pnpm build`:**
+   - `prisma generate` runs first
    - Next.js builds your app
-   - Prisma Client (generated in postinstall) is used
    - ✅ Build succeeds
 
 3. **Migrations are NOT run automatically:**
    - You must run migrations manually (see [Running Production Migrations](#running-production-migrations))
-   - ⚠️ **Never use `prisma db push` in production!** Always use migrations.
+   - ⚠️ **Never use `prisma migrate dev` or `prisma db push` in CI/Vercel.**
+   - ✅ Use `prisma migrate deploy` for production.
 
 ---
 
@@ -177,7 +178,7 @@ STORAGE_PROVIDER=supabase
 - Leave as **"."** (root) unless your Next.js app is in a subdirectory
 
 #### Build and Output Settings
-- **Build Command:** `next build` (default, already in package.json)
+- **Build Command:** `pnpm build` (runs `prisma generate` first)
 - **Output Directory:** `.next` (default)
 - **Install Command:** `pnpm install` (or `npm install` if using npm)
 
@@ -260,7 +261,7 @@ Vercel does **NOT** run migrations automatically. You must run them yourself.
 
 ### Option B: Run Migrations from CI/CD (Advanced)
 
-You can add a GitHub Action or similar to run migrations on deploy, but this is **NOT recommended** for production without careful testing.
+If you add CI/CD migrations, ensure they use `prisma migrate deploy` and **do not run inside Vercel**. Vercel builds must not run migrations.
 
 ### When to Run Migrations
 

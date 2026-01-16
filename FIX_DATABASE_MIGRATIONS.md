@@ -48,24 +48,9 @@ You need to run database migrations to sync your database schema with your Prism
    npx prisma migrate deploy
    ```
 
-### Option 2: Using Vercel Build Command
+### Option 2: CI/CD (Do Not Use Vercel Builds)
 
-Add this to your `package.json` scripts:
-```json
-{
-  "scripts": {
-    "postinstall": "prisma generate",
-    "db:migrate:deploy": "prisma migrate deploy"
-  }
-}
-```
-
-Then in Vercel:
-1. Go to Project Settings → Build & Development Settings
-2. Add a build command that runs migrations:
-   ```
-   pnpm install && pnpm db:migrate:deploy && pnpm build
-   ```
+If you run migrations from CI/CD, use `prisma migrate deploy` in a dedicated job that runs **outside Vercel**. Vercel builds must not run migrations.
 
 ### Option 3: Manual SQL Execution
 

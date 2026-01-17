@@ -6,6 +6,31 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search");
     const excludeBatchId = searchParams.get("excludeBatchId");
+    const adminSession = request.cookies.get("admin_session");
+
+    // Admin list endpoint for dropdowns (no search)
+    if (!search) {
+      if (!adminSession || adminSession.value !== "1") {
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 401 }
+        );
+      }
+
+      const limit = Math.min(parseInt(searchParams.get("limit") || "200", 10), 500);
+      const students = await prisma.student.findMany({
+        select: {
+          id: true,
+          registrationNo: true,
+          fullName: true,
+          batchId: true,
+        },
+        orderBy: { fullName: "asc" },
+        take: limit,
+      });
+
+      return NextResponse.json({ students });
+    }
 
     if (!search || search.trim().length < 2) {
       return NextResponse.json(

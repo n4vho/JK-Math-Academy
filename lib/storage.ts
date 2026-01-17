@@ -36,12 +36,13 @@ const config: StorageConfig = {
 export async function uploadFile(
   file: Buffer,
   filename: string,
-  contentType: string
+  contentType: string,
+  folder = "students"
 ): Promise<string> {
   if (config.provider === "local") {
-    return uploadToLocal(file, filename);
+    return uploadToLocal(file, filename, folder);
   } else if (config.provider === "supabase") {
-    return uploadToSupabase(file, filename, contentType);
+    return uploadToSupabase(file, filename, contentType, folder);
   } else {
     throw new Error(`Unknown storage provider: ${config.provider}`);
   }
@@ -63,8 +64,8 @@ export async function deleteFile(publicUrl: string): Promise<void> {
 /**
  * Local filesystem upload implementation
  */
-async function uploadToLocal(file: Buffer, filename: string): Promise<string> {
-  const uploadDir = config.localPath!;
+async function uploadToLocal(file: Buffer, filename: string, folder: string): Promise<string> {
+  const uploadDir = join(config.localPath!, folder);
   
   // Ensure upload directory exists
   if (!existsSync(uploadDir)) {
@@ -75,7 +76,7 @@ async function uploadToLocal(file: Buffer, filename: string): Promise<string> {
   await writeFile(filePath, file);
 
   // Return public URL
-  return `${config.publicUrl}/${filename}`;
+  return `${config.publicUrl}/${folder}/${filename}`;
 }
 
 /**
@@ -97,7 +98,8 @@ async function deleteFromLocal(publicUrl: string): Promise<void> {
 async function uploadToSupabase(
   file: Buffer,
   filename: string,
-  contentType: string
+  contentType: string,
+  folder: string
 ): Promise<string> {
   if (!supabaseAdmin) {
     throw new Error(
@@ -109,7 +111,7 @@ async function uploadToSupabase(
     throw new Error("Supabase bucket not configured. Set SUPABASE_STORAGE_BUCKET environment variable.");
   }
 
-  const path = `students/${filename}`;
+  const path = `${folder}/${filename}`;
 
   const { data, error } = await supabaseAdmin.storage
     .from(config.supabaseBucket)
@@ -190,4 +192,14 @@ export function generateStudentPhotoFilename(studentId: string, originalFilename
   const ext = originalFilename.split(".").pop()?.toLowerCase() || "jpg";
   const timestamp = Date.now();
   return `${studentId}-${timestamp}.${ext}`;
+}
+
+/**
+ * Generate a unique filename for notice attachments
+ */
+export function generateNoticeAttachmentFilename(originalFilename: string): string {
+  const ext = originalFilename.split(".").pop()?.toLowerCase() || "dat";
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).slice(2, 10);
+  return `notice-${timestamp}-${random}.${ext}`;
 }

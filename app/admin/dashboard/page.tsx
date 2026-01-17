@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { NotificationsToggle } from "./notifications-toggle";
 
 // Force dynamic rendering - this page requires database access and authentication
 export const dynamic = 'force-dynamic';
@@ -299,6 +300,9 @@ export default async function AdminDashboardPage() {
                 📚 Manage Batches
               </Button>
             </Link>
+            <div className="pt-2">
+              <NotificationsToggle />
+            </div>
           </CardContent>
         </Card>
 

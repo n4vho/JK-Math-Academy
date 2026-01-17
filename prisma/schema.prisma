@@ -221,3 +221,16 @@ model NoticeRead {
   @@unique([noticeId, userId])
   @@index([userId])
 }
+
+model PushSubscription {
+  id         String   @id @default(cuid())
+  userId     String
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  isEnabled  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime?
+
+  @@index([userId])
+}

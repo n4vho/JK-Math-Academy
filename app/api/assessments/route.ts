@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { sendAssessmentPush } from "@/src/lib/push/sendAssessmentPush";
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,6 +74,12 @@ export async function POST(request: NextRequest) {
         date: new Date(date),
         maxMarks: Math.floor(maxMarks),
       },
+    });
+
+    void sendAssessmentPush({
+      id: assessment.id,
+      title: assessment.title,
+      batchId: assessment.batchId,
     });
 
     return NextResponse.json(

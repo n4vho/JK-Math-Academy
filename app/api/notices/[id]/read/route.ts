@@ -32,9 +32,9 @@ export async function POST(
         where: { role: "ADMIN" },
         select: { id: true },
       });
-      userId = adminUser?.id ?? null;
+      userId = adminUser?.id ? `admin:${adminUser.id}` : null;
     } else {
-      userId = studentId;
+      userId = studentId ? `student:${studentId}` : null;
     }
 
     if (!userId) {

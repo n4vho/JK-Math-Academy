@@ -4,7 +4,9 @@ import { requireStudentSession } from "@/lib/student-session";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./logout-button";
+import { NotificationsToggle } from "@/components/push/notifications-toggle";
 import Link from "next/link";
+import { NoticesLink } from "@/components/notices/notices-link";
 
 export default async function StudentDashboardPage() {
   // Require student session - redirects if not authenticated
@@ -85,6 +87,7 @@ export default async function StudentDashboardPage() {
           <Link href="/student/payments">
             <Button variant="outline">Payment History</Button>
           </Link>
+          <NoticesLink />
           <Link href="/student/results">
             <Button variant="outline">View Results</Button>
           </Link>
@@ -158,6 +161,15 @@ export default async function StudentDashboardPage() {
           </CardContent>
         </Card>
       )}
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <NotificationsToggle />
+        </CardContent>
+      </Card>
 
       {/* Recent Assessments Card */}
       <Card>

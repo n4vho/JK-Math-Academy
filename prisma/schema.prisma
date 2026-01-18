@@ -66,7 +66,6 @@ model User {
 
   payments  Payment[]
   createdNotices Notice[]
-  noticeReads    NoticeRead[]
 
   @@index([phone])
   @@index([username])
@@ -216,7 +215,6 @@ model NoticeRead {
   readAt   DateTime @default(now())
 
   notice   Notice   @relation(fields: [noticeId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([noticeId, userId])
   @@index([userId])

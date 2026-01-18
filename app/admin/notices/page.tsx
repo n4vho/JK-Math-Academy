@@ -88,6 +88,7 @@ export default function AdminNoticesPage() {
   const [batches, setBatches] = useState<BatchOption[]>([]);
   const [students, setStudents] = useState<StudentOption[]>([]);
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -302,6 +303,32 @@ export default function AdminNoticesPage() {
       setToast({ message: "Upload failed.", type: "error" });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleDelete = async (noticeId: string) => {
+    const confirmed = window.confirm("Delete this notice? This cannot be undone.");
+    if (!confirmed) return;
+
+    setIsDeletingId(noticeId);
+    try {
+      const response = await fetch(`/api/notices/${noticeId}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setToast({ message: data?.error || "Failed to delete notice.", type: "error" });
+        return;
+      }
+
+      setToast({ message: "Notice deleted.", type: "success" });
+      await loadNotices();
+    } catch (err) {
+      console.error("Delete notice failed:", err);
+      setToast({ message: "Failed to delete notice.", type: "error" });
+    } finally {
+      setIsDeletingId(null);
     }
   };
 
@@ -619,8 +646,13 @@ export default function AdminNoticesPage() {
                           <Button variant="outline" size="sm" disabled>
                             Edit
                           </Button>
-                          <Button variant="outline" size="sm" disabled>
-                            Delete
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDelete(notice.id)}
+                            disabled={isDeletingId === notice.id}
+                          >
+                            {isDeletingId === notice.id ? "Deleting..." : "Delete"}
                           </Button>
                         </div>
                       </td>
